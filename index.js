@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const email = process.env.EMAIL;
 const password = process.env.PASSWORD;
 
+const Article = require("./models/Article");
+
 mongoose
   .connect(
     `mongodb+srv://${email}:${password}@cluster0.vxdd8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
@@ -55,7 +57,16 @@ app.get("/sayhello", (req, res) => {
   });
   //   res.send(`hello ${req.body.name} your age is${req.query.age}`);
 });
+//  articles endpoints
 
+app.post("/articles", async (req, res) => {
+  const newArticle = new Article();
+  newArticle.title = "my first article";
+  newArticle.body = "this is the body";
+  newArticle.numberOfLikes = 100;
+  await newArticle.save();
+  res.send("the new article has been stored");
+});
 app.listen(3001, () => {
   console.log("iam listing in port 3001");
 });
