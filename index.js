@@ -1,7 +1,23 @@
+require("dotenv").config();
+
 const express = require("express");
+const mongoose = require("mongoose");
+
+const email = process.env.EMAIL;
+const password = process.env.PASSWORD;
+
+mongoose
+  .connect(
+    `mongodb+srv://${email}:${password}@cluster0.vxdd8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+  )
+  .then(() => {
+    console.log("connected successful");
+  })
+  .catch(() => {
+    console.log("error with connecting with database");
+  });
 const app = express();
 app.use(express.json());
-
 app.get("/hello", (req, res) => {
   res.send("hello");
 });
