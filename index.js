@@ -1,4 +1,4 @@
-// require("dotenv").config();
+require("dotenv").config();
 
 // const express = require("express");
 // const mongoose = require("mongoose");
@@ -136,48 +136,79 @@ const express = require("express");
 const path = require("path");
 const app = express();
 
-app.get("^/$|/index(.html)?", (req, res) => {
-  // res.sendFile("./views/index.html", { root: __dirname });
-  res.sendFile(path.join(__dirname, "views", "index.html"));
+//  custom middleware logger
+
+// app.use((req, res, next) => {
+//   console.log(`${req.method} ${req.path}`);
+//   next();
+// });
+// app.use(express.urlencoded({ extended: false }));
+
+// app.use(express.json());
+// app.get("^/$|/index(.html)?", (req, res) => {
+//   // res.sendFile("./views/index.html", { root: __dirname });
+//   res.sendFile(path.join(__dirname, "views", "index.html"));
+// });
+// app.get("/new-page(.html)?", (req, res) => {
+//   res.sendFile("./views/index.html", { root: __dirname });
+//   // res.redirect(301, "/new-page.html");
+// });
+// app.get("/old-page(.html)?", (req, res) => {
+//   res.redirect(301, "/new-page.html");
+// });
+// app.get(
+//   "/hello(.html)?",
+//   (req, res, next) => {
+//     console.log("hello load ");
+//     next();
+//   },
+//   (req, res) => {
+//     res.send("hello wrld");
+//   }
+// );
+
+// const one = (req, res, next) => {
+//   console.log("one");
+//   next();
+// };
+// const two = (req, res, next) => {
+//   console.log("two");
+//   next();
+// };
+// const three = (req, res, next) => {
+//   console.log("three");
+//   res.send("finshed");
+// };
+// app.get("/chain(.html)?", [one, two, three]);
+
+// app.get("*/", (req, res) => {
+//   res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+// });
+
+const mongoose = require("mongoose");
+
+const USER_NAME = process.env.USER_NAME;
+const PASSWORD = process.env.PASSWORD;
+
+mongoose
+  .connect(
+    `mongodb://${USER_NAME}:${PASSWORD}@cluster0-shard-00-00.vxdd8.mongodb.net:27017,cluster0-shard-00-01.vxdd8.mongodb.net:27017,cluster0-shard-00-02.vxdd8.mongodb.net:27017/?replicaSet=atlas-alo0rp-shard-0&ssl=true&authSource=admin&retryWrites=true&w=majority&appName=Cluster0`
+  )
+  .then(() => {
+    console.log("connected successful");
+  })
+  .catch(() => {
+    console.log("error with connecting with database");
+  });
+
+const UserModal = require("./models/User");
+
+const cors = require("cors");
+app.use(cors());
+app.get("/users", async (req, res) => {
+  const users = await UserModal.find();
+  res.json(users);
 });
-app.get("/new-page(.html)?", (req, res) => {
-  res.sendFile("./views/index.html", { root: __dirname });
-  // res.redirect(301, "/new-page.html");
-});
-app.get("/old-page(.html)?", (req, res) => {
-  res.redirect(301, "/new-page.html");
-});
-
-app.get(
-  "/hello(.html)?",
-  (req, res, next) => {
-    console.log("hello load ");
-    next();
-  },
-  (req, res) => {
-    res.send("hello wrld");
-  }
-);
-
-const one = (req, res, next) => {
-  console.log("one");
-  next();
-};
-const two = (req, res, next) => {
-  console.log("two");
-  next();
-};
-const three = (req, res, next) => {
-  console.log("three");
-  res.send("finshed");
-};
-app.get("/chain(.html)?", [one, two, three]);
-
-
-app.get("*/", (req, res) => {
-  res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
-});
-
 app.listen(5000, () => {
   console.log("server is running in 5000");
 });
